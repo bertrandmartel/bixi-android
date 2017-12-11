@@ -1,0 +1,66 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "26.0.2"
+
+    defaultConfig {
+        applicationId "fr.bmartel.android.bixi.app"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+    }
+    //playstore config
+    signingConfigs {
+        playStore
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            signingConfig signingConfigs.playStore
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile "com.android.support:appcompat-v7:27.0.2"
+    compile 'com.android.support:design:27.0.2'
+    compile 'com.android.support:recyclerview-v7:27.0.2'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile project(':bixi-service')
+}
+
+def Properties props = new Properties()
+def propFile = new File('signing.properties')
+
+if (propFile.canRead()) {
+    props.load(new FileInputStream(propFile))
+}
+
+if (props.containsKey('STORE_FILE')
+        && props.containsKey('STORE_PASSWORD')
+        && props.containsKey('KEY_ALIAS')
+        && props.containsKey('KEY_PASSWORD')) {
+    android.signingConfigs.playStore.storeFile = file(props['STORE_FILE'])
+    android.signingConfigs.playStore.storePassword = props['STORE_PASSWORD']
+    android.signingConfigs.playStore.keyAlias = props['KEY_ALIAS']
+    android.signingConfigs.playStore.keyPassword = props['KEY_PASSWORD']
+    android.signingConfigs.playStore.v1SigningEnabled = true
+    android.signingConfigs.playStore.v2SigningEnabled = true
+} else {
+    println 'signing.properties not found or incomplete'
+    android.buildTypes.release.signingConfig = null
+}
+repositories {
+    mavenCentral()
+}
