@@ -1,5 +1,6 @@
 # Bixi Android library #
 
+[![CircleCI](https://img.shields.io/circleci/project/bertrandmartel/bixi-android.svg?maxAge=2592000?style=plastic)](https://circleci.com/gh/bertrandmartel/bixi-android)
 [![License](http://img.shields.io/:license-mit-blue.svg)](LICENSE.md)
 
 Bixi library is an Android service receiving gesture events from Bixi Bluetooth devices
