@@ -108,25 +108,29 @@ class BluetoothManager {
         override fun onReceive(context: Context, intent: Intent) {
             if (BluetoothDevice.ACTION_FOUND == intent.action) {
                 val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-                if (device.address != null
-                        && device.name != null
-                        && !scanningList.containsKey(device.address) &&
-                        device.name.startsWith("BIXI_")) {
+                discoverDevice(device)
+            }
+        }
+    }
 
-                    scanningList.put(device.address, device)
-                    scanList.add(BtDevice(device.address, device.name))
-                    try {
-                        val obj = JSONObject()
-                        obj.put("address", device.address)
-                        obj.put("deviceName", device.name)
+    private fun discoverDevice(device: BluetoothDevice) {
+        if (device.address != null
+                && device.name != null
+                && !scanningList.containsKey(device.address) &&
+                device.name.startsWith("BIXI_")) {
 
-                        val deviceInfo = ArrayList<String>()
-                        deviceInfo.add(obj.toString())
-                        broadcastUpdateStringList(BluetoothConst.BT_EVENT_DEVICE_DISCOVERED, deviceInfo)
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                    }
-                }
+            scanningList.put(device.address, device)
+            scanList.add(BtDevice(device.address, device.name))
+            try {
+                val obj = JSONObject()
+                obj.put("address", device.address)
+                obj.put("deviceName", device.name)
+
+                val deviceInfo = ArrayList<String>()
+                deviceInfo.add(obj.toString())
+                broadcastUpdateStringList(BluetoothConst.BT_EVENT_DEVICE_DISCOVERED, deviceInfo)
+            } catch (e: JSONException) {
+                e.printStackTrace()
             }
         }
     }
@@ -148,7 +152,7 @@ class BluetoothManager {
     /**
      * clear list adapter (usually before rescanning)
      */
-    fun clearScanningList() {
+    private fun clearScanningList() {
         scanList.clear()
         scanningList.clear()
     }
@@ -157,20 +161,24 @@ class BluetoothManager {
      * Scan new Bluetooth device
      */
     fun startScan(): Boolean {
+        clearScanningList()
+        for (device in mBluetoothAdapter.bondedDevices) {
+            discoverDevice(device)
+        }
         if (!isScanning) {
             broadcastUpdate(BluetoothConst.BT_EVENT_SCAN_START)
-            mHandler?.postDelayed(
+            mHandler.postDelayed(
                     {
                         if (isScanning) {
                             broadcastUpdate(BluetoothConst.BT_EVENT_SCAN_END)
                             isScanning = false
-                            mBluetoothAdapter?.cancelDiscovery()
+                            mBluetoothAdapter.cancelDiscovery()
                         }
                     }, SCAN_PERIOD.toLong())
 
             isScanning = true
 
-            return mBluetoothAdapter?.startDiscovery() ?: false
+            return mBluetoothAdapter.startDiscovery()
         } else {
             Log.v(TAG, "already scanning")
         }
@@ -243,8 +251,7 @@ class BluetoothManager {
             gattThreadPool.execute(object : GattTask(gatt = gatt, gattUid = characUid, value = value, listener = listener) {
                 override fun run() {
                     val charac = GattUtils.getCharacteristic(serviceList = gatt.services, characteristicUid = uid)
-                    charac?.setValue(value)
-
+                    charac?.setValue(value) ?: false
                     gatt.writeCharacteristic(charac)
 
                     val startTime = System.currentTimeMillis()
@@ -279,36 +286,26 @@ class BluetoothManager {
                     serviceUid = serviceUid,
                     characUid = characUid) {
                 override fun run() {
-                    val descriptor = gatt?.getService(UUID.fromString(serviceUid))
-                            ?.getCharacteristic(UUID.fromString(descriptorUid))
-                            ?.getDescriptor(UUID.fromString(uid))
-                    descriptor?.setValue(value)
+                    val descriptor = gatt.getService(UUID.fromString(serviceUid))
+                            ?.getCharacteristic(UUID.fromString(characUid))
+                            ?.getDescriptor(UUID.fromString(descriptorUid))
+
+                    descriptor?.setValue(value) ?: false
 
                     if (descriptor != null) {
-                        gatt?.writeDescriptor(descriptor)
+                        gatt.writeDescriptor(descriptor)
                     }
                     eventManager.reset()
+                    try {
+                        eventManager.waitOne(BT_TIMEOUT.toLong())
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             })
             gattThreadPool.execute { }
         } else
             Log.e(TAG, "Error int writeCharacteristic() input argument NULL")
-    }
-
-    fun disconnect(deviceAddress: String?): Boolean {
-        if (mBluetoothAdapter == null || deviceAddress == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.")
-            return false
-        }
-
-        if (connectionList.containsKey(deviceAddress)) {
-            connectionList[deviceAddress]?.bluetoothGatt?.disconnect()
-            connectionList[deviceAddress]?.bluetoothGatt?.close()
-            return true
-        } else {
-            Log.e(TAG, "device $deviceAddress not found in list")
-        }
-        return false
     }
 
     fun disconnectAll() {
@@ -324,7 +321,7 @@ class BluetoothManager {
     }
 
     fun unregister() {
-        context?.unregisterReceiver(mReceiver)
+        context.unregisterReceiver(mReceiver)
     }
 
     companion object {
