@@ -32,9 +32,11 @@ import android.os.Build
 import android.util.Log
 import fr.bmartel.android.bixi.bluetooth.listener.IDeviceInitListener
 import fr.bmartel.android.bixi.bluetooth.listener.IPushListener
+import fr.bmartel.android.bixi.utils.GattUtils
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+
 
 /**
  * Bluetooth device connection management.
@@ -149,15 +151,15 @@ class BluetoothConnnection {
     }
 
     fun writeCharacteristic(charac: String, value: ByteArray, listener: IPushListener?) {
-        manager?.writeCharacteristic(characUid = charac, value = value, gatt = bluetoothGatt, listener = listener)
+        manager.writeCharacteristic(characUid = charac, value = value, gatt = bluetoothGatt, listener = listener)
     }
 
-    fun enableDisableNotification(service: UUID, charac: UUID, enable: Boolean) {
-        bluetoothGatt?.setCharacteristicNotification(bluetoothGatt?.getService(service)?.getCharacteristic(charac), enable)
+    fun enableDisableNotification(service: UUID, charac: UUID, enable: Boolean): Boolean {
+        return bluetoothGatt?.setCharacteristicNotification(bluetoothGatt?.getService(service)?.getCharacteristic(charac), enable) ?: false
     }
 
     fun enableGattNotifications(serviceUid: String, characUid: String) {
-        manager?.writeDescriptor(
+        manager.writeDescriptor(
                 descriptorUid = BluetoothConst.CLIENT_CHARACTERISTIC_CONFIG,
                 gatt = bluetoothGatt,
                 value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE,
@@ -170,6 +172,8 @@ class BluetoothConnnection {
     }
 
     fun disconnect() {
+        GattUtils.refreshDeviceCache(bluetoothGatt)
+        GattUtils.unpair(bluetoothGatt)
         bluetoothGatt?.disconnect()
     }
 
