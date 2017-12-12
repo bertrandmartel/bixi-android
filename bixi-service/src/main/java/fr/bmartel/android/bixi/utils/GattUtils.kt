@@ -23,14 +23,10 @@
  */
 package fr.bmartel.android.bixi.utils
 
+import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattService
-import android.content.Intent
-import android.util.Log
-import fr.bmartel.android.bixi.bluetooth.BluetoothConst
-import fr.bmartel.android.bixi.model.BtDevice
-import org.json.JSONException
-import org.json.JSONObject
+
 
 /**
  * Some gatt processing useful functions
@@ -55,5 +51,18 @@ object GattUtils {
             }
         }
         return null
+    }
+
+    /**
+     * https://stackoverflow.com/a/22709467/2614364 by Miguel
+     */
+    fun refreshDeviceCache(gatt: BluetoothGatt?): Boolean {
+        val localMethod = gatt?.javaClass?.getMethod("refresh")
+        return (localMethod?.invoke(gatt) as Boolean)
+        return false
+    }
+
+    fun unpair(gatt: BluetoothGatt?) {
+        gatt?.device?.javaClass?.getMethod("removeBond")?.invoke(gatt.device)
     }
 }
