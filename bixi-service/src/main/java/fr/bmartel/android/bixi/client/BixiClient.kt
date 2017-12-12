@@ -248,10 +248,6 @@ class BixiClient {
         }
     }
 
-    fun clearScanningList() {
-        bixiService?.clearScanningList()
-    }
-
     fun connectDevice(deviceAddress: String) {
         bixiService?.connect(deviceAddress)
     }

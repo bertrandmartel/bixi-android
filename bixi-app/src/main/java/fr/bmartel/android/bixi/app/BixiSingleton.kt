@@ -131,7 +131,7 @@ class BixiSingleton
         }
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         mBixiClient.onActivityResult(requestCode = requestCode)
     }
 
@@ -143,17 +143,12 @@ class BixiSingleton
         if (mBixiClient.isScanning) {
             mBixiClient.stopScan()
         } else {
-            mBixiClient.clearScanningList()
             mBixiClient.startScan()
         }
     }
 
     fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         mBixiClient.onRequestPermissionsResult(requestCode = requestCode, grantResults = grantResults)
-    }
-
-    fun clearScanningList() {
-        mBixiClient.clearScanningList()
     }
 
     fun stopScan() {

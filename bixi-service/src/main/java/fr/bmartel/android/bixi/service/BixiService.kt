@@ -36,6 +36,7 @@ import fr.bmartel.android.bixi.bluetooth.BluetoothManager
 import fr.bmartel.android.bixi.model.BtDevice
 import java.util.*
 
+
 /**
  * Service connecting to Bixi device.
  *
@@ -90,14 +91,6 @@ class BixiService : Service() {
 
     fun startScan(): Boolean {
         return btManager.startScan()
-    }
-
-    fun clearScanningList() {
-        btManager.clearScanningList()
-    }
-
-    fun disconnect(deviceAddress: String): Boolean? {
-        return btManager.disconnect(deviceAddress)
     }
 
     fun disconnectall() {

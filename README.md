@@ -29,7 +29,7 @@ List of gesture events :
 with Gradle, from jcenter or maven central :
 
 ```groovy
-compile 'fr.bmartel:bixi-service:1.0'
+compile 'fr.bmartel:bixi-service:1.1'
 ```
 
 ## How to use it ?
@@ -50,8 +50,6 @@ class MainActivity : Activity() {
             override fun onServiceConnected() {
                 Log.v("bixi-lib", "service is connected - ready to receive events")
 
-                //clear the list before scanning
-                bixiClient.clearScanningList()
                 //start scanning
                 bixiClient.startScan()
             }
@@ -123,8 +121,6 @@ public class MainActivity extends Activity {
             public void onServiceConnected() {
                 Log.v("bixi-lib", "service is connected - ready to receive events");
 
-                //clear the list before scanning
-                bixiClient.clearScanningList();
                 //start scanning
                 bixiClient.startScan();
             }

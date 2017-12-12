@@ -70,10 +70,7 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        val scanning: Boolean = mSingleton?.startScan() ?: false
-        if (scanning) {
-            mSingleton?.clearScanningList()
-        }
+        mSingleton?.startScan()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -110,10 +107,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onServiceConnected() {
-        val scanning: Boolean = mSingleton?.startScan() ?: false
-        if (scanning) {
-            mSingleton?.clearScanningList()
-        }
+        mSingleton?.startScan()
     }
 
     override fun onStartScan() {
