@@ -59,7 +59,6 @@ class BixiDevice {
             override fun onCharacteristicReadReceived(charac: BluetoothGattCharacteristic) {}
 
             override fun onCharacteristicChangeReceived(charac: BluetoothGattCharacteristic) {
-
                 if (charac.uuid.toString().equals(BIXI_GESTURE_CHAR)) {
                     val data = charac.value
 
@@ -96,11 +95,12 @@ class BixiDevice {
     }
 
     fun init() {
-        mConn?.enableDisableNotification(service = UUID.fromString(BIXI_SERVICE), charac = UUID.fromString(BIXI_GESTURE_CHAR), enable = true)
-        mConn?.enableGattNotifications(serviceUid = BIXI_SERVICE, characUid = BIXI_GESTURE_CHAR)
+        mConn.enableDisableNotification(service = UUID.fromString(BIXI_SERVICE), charac = UUID.fromString(BIXI_GESTURE_CHAR), enable = true)
 
-        mConn?.writeCharacteristic(charac = BIXI_INTERNAL_CMD_CHAR, value = CMD_LEFT, listener = null)
-        mConn?.writeCharacteristic(charac = BIXI_INTERNAL_CMD_CHAR, value = CMD_RIGHT, listener = null)
+        mConn.enableGattNotifications(serviceUid = BIXI_SERVICE, characUid = BIXI_GESTURE_CHAR)
+
+        mConn.writeCharacteristic(charac = BIXI_INTERNAL_CMD_CHAR, value = CMD_LEFT, listener = null)
+        mConn.writeCharacteristic(charac = BIXI_INTERNAL_CMD_CHAR, value = CMD_RIGHT, listener = null)
 
         mInitListener?.onInit()
     }
@@ -115,11 +115,11 @@ class BixiDevice {
      * @param characteristic Bluetooth characteristic
      */
     fun notifyCharacteristicReadReceived(characteristic: BluetoothGattCharacteristic) {
-        characteristicListener?.onCharacteristicReadReceived(charac = characteristic)
+        characteristicListener.onCharacteristicReadReceived(charac = characteristic)
     }
 
     fun notifyCharacteristicWriteReceived(characteristic: BluetoothGattCharacteristic) {
-        characteristicListener?.onCharacteristicWriteReceived(charac = characteristic)
+        characteristicListener.onCharacteristicWriteReceived(charac = characteristic)
     }
 
     /**
@@ -128,7 +128,7 @@ class BixiDevice {
      * @param characteristic Bluetooth characteristic
      */
     fun notifyCharacteristicChangeReceived(characteristic: BluetoothGattCharacteristic) {
-        characteristicListener?.onCharacteristicChangeReceived(charac = characteristic)
+        characteristicListener.onCharacteristicChangeReceived(charac = characteristic)
     }
 
     companion object {

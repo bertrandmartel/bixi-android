@@ -58,7 +58,7 @@ abstract class BaseActivity : AppCompatActivity(), ICommonListener, IBixi {
     /**
      * scan image button at top right
      */
-    private lateinit var scanImage: ImageButton
+    private var scanImage: ImageButton? = null
 
     /**
      * navigationdrawer
@@ -149,7 +149,7 @@ abstract class BaseActivity : AppCompatActivity(), ICommonListener, IBixi {
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         mSingleton?.onActivityResult(requestCode = requestCode, resultCode = resultCode, data = data)
     }
 
@@ -193,7 +193,7 @@ abstract class BaseActivity : AppCompatActivity(), ICommonListener, IBixi {
 
         scanImage = menu.findItem(R.id.scanning_button).actionView.findViewById(R.id.bluetooth_scan_stop)
         progressBar = menu.findItem(R.id.scanning_button).actionView.findViewById(R.id.bluetooth_scanning)
-        scanImage.setOnClickListener { mSingleton?.toggleScan() }
+        scanImage?.setOnClickListener { mSingleton?.toggleScan() }
         progressBar?.setOnClickListener { mSingleton?.toggleScan() }
         runOnUiThread { showProgressBar() }
 
@@ -216,7 +216,7 @@ abstract class BaseActivity : AppCompatActivity(), ICommonListener, IBixi {
      * show progress bar to indicate scanning
      */
     protected fun showProgressBar() {
-        scanImage.visibility = View.GONE
+        scanImage?.visibility = View.GONE
         progressBar?.visibility = View.VISIBLE
     }
 
@@ -224,7 +224,7 @@ abstract class BaseActivity : AppCompatActivity(), ICommonListener, IBixi {
      * hide scanning progress bar
      */
     protected fun hideProgressBar() {
-        scanImage.visibility = View.VISIBLE
+        scanImage?.visibility = View.VISIBLE
         progressBar?.visibility = View.GONE
     }
 }
