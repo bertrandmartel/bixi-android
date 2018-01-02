@@ -5,6 +5,10 @@
 
 Bixi library is an Android service receiving gesture events from Bixi Bluetooth devices
 
+Download Bixi library Showcase from Google Play :
+ 
+[![Download YoutubeTv library Showcase from Google Play](http://www.android.com/images/brand/android_app_on_play_large.png)](https://play.google.com/store/apps/details?id=fr.bmartel.android.bixi.app)
+
 ## What is Bixi ?
 
 [Bixi](https://bixi.io/) is a small bluetooth touch-free controller with built in battery made by Bluemint Labs
@@ -215,5 +219,5 @@ cd bixi-android
 ## License
 
 ```
-The MIT License (MIT) Copyright (c) 2017 Bertrand Martel
+The MIT License (MIT) Copyright (c) 2017-2018 Bertrand Martel
 ```
